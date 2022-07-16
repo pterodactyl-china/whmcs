@@ -1,5 +1,5 @@
 # 翼龙面板-WHMCS模块
-翼龙面板WHMCS自动售卖模块(仅适用于1.0+版本) 汉化-[官方翼龙](https://github.com/pterodactyl/panel) [中国版](https://github.com/pterodactyl-china/pterodactyl-chinese-stable)
+翼龙面板WHMCS自动售卖模块(仅适用于1.0+版本) 汉化-[官方翼龙](https://github.com/pterodactyl/panel) 或翼龙中国的汉化版本 [稳定版](https://github.com/pterodactyl-china/pterodactyl-chinese-stable) [开发版](https://github.com/pterodactyl-china/panel)
 # 安装步骤
 1. 下载或Clone该仓库
 2. 移动pterodactyl文件夹到```/path/to/whmcs/modules/server/```
