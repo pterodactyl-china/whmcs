@@ -337,7 +337,7 @@ function pterodactyl_CreateAccount(array $params) {
         $eggId = pterodactyl_GetOption($params, 'egg_id');
 
         $eggData = pterodactyl_API($params, 'nests/' . $nestId . '/eggs/' . $eggId . '?include=variables');
-        if($eggData['status_code'] !== 200) throw new Exception('Failed to get egg data, received error code: ' . $eggData['status_code'] . '. Enable module debug log for more info.');
+        if($eggData['status_code'] !== 200) throw new Exception('获取预设数据失败，错误代码: ' . $eggData['status_code'] . '. 启用 debug 日志以获取更多信息.');
 
         $environment = [];
         foreach($eggData['attributes']['relationships']['variables']['data'] as $key => $val) {
@@ -400,8 +400,8 @@ function pterodactyl_CreateAccount(array $params) {
 
         $server = pterodactyl_API($params, 'servers?include=allocations', $serverData, 'POST');
 
-        if($server['status_code'] === 400) throw new Exception('Couldn\'t find any nodes satisfying the request.');
-        if($server['status_code'] !== 201) throw new Exception('Failed to create the server, received the error code: ' . $server['status_code'] . '. Enable module debug log for more info.');
+        if($server['status_code'] === 400) throw new Exception('找不到满足请求的节点。');
+        if($server['status_code'] !== 201) throw new Exception('创建服务器失败，错误代码: ' . $server['status_code'] . '. 启用 debug 日志以获取更多信息.');
 
         unset($params['password']);
 
@@ -434,7 +434,7 @@ function pterodactyl_GetServerID(array $params, $raw = false) {
         if($raw) return $serverResult;
         else return $serverResult['attributes']['id'];
     } else if($serverResult['status_code'] === 500) {
-        throw new Exception('Failed to get server, panel errored. Check panel logs for more info.');
+        throw new Exception('无法获取服务器，面板错误。检查面板日志以获取更多信息。');
     }
 
     if(Capsule::schema()->hasTable('tbl_pterodactylproduct')) {
@@ -447,7 +447,7 @@ function pterodactyl_GetServerID(array $params, $raw = false) {
             if($raw) {
                 $serverResult = pterodactyl_API($params, 'servers/' . $oldData->server_id);
                 if($serverResult['status_code'] === 200) return $serverResult;
-                else throw new Exception('Failed to get server, received the error code: ' . $serverResult['status_code'] . '. Enable module debug log for more info.');
+                else throw new Exception('无法获取服务器，错误代码: ' . $serverResult['status_code'] . '. 启用 debug 日志以获取更多信息.');
             } else {
                 return $oldData->server_id;
             }
@@ -458,10 +458,10 @@ function pterodactyl_GetServerID(array $params, $raw = false) {
 function pterodactyl_SuspendAccount(array $params) {
     try {
         $serverId = pterodactyl_GetServerID($params);
-        if(!isset($serverId)) throw new Exception('Failed to suspend server because it doesn\'t exist.');
+        if(!isset($serverId)) throw new Exception('由于服务器不存在，无法冻结服务器。');
 
         $suspendResult = pterodactyl_API($params, 'servers/' . $serverId . '/suspend', [], 'POST');
-        if($suspendResult['status_code'] !== 204) throw new Exception('Failed to suspend the server, received error code: ' . $suspendResult['status_code'] . '. Enable module debug log for more info.');
+        if($suspendResult['status_code'] !== 204) throw new Exception('冻结服务器失败，错误代码: ' . $suspendResult['status_code'] . '. 启用 debug 日志以获取更多信息.');
     } catch(Exception $err) {
         return $err->getMessage();
     }
@@ -472,10 +472,10 @@ function pterodactyl_SuspendAccount(array $params) {
 function pterodactyl_UnsuspendAccount(array $params) {
     try {
         $serverId = pterodactyl_GetServerID($params);
-        if(!isset($serverId)) throw new Exception('Failed to unsuspend server because it doesn\'t exist.');
+        if(!isset($serverId)) throw new Exception('由于服务器不存在，无法取消冻结服务器。');
 
         $suspendResult = pterodactyl_API($params, 'servers/' . $serverId . '/unsuspend', [], 'POST');
-        if($suspendResult['status_code'] !== 204) throw new Exception('Failed to unsuspend the server, received error code: ' . $suspendResult['status_code'] . '. Enable module debug log for more info.');
+        if($suspendResult['status_code'] !== 204) throw new Exception('无法取消冻结服务器，错误代码: ' . $suspendResult['status_code'] . '. 启用 debug 日志以获取更多信息.');
     } catch(Exception $err) {
         return $err->getMessage();
     }
@@ -489,7 +489,7 @@ function pterodactyl_TerminateAccount(array $params) {
         if(!isset($serverId)) throw new Exception('Failed to terminate server because it doesn\'t exist.');
 
         $deleteResult = pterodactyl_API($params, 'servers/' . $serverId, [], 'DELETE');
-        if($deleteResult['status_code'] !== 204) throw new Exception('Failed to terminate the server, received error code: ' . $deleteResult['status_code'] . '. Enable module debug log for more info.');
+        if($deleteResult['status_code'] !== 204) throw new Exception('Failed to terminate the server, received error code: ' . $deleteResult['status_code'] . '. 启用 debug 日志以获取更多信息.');
     } catch(Exception $err) {
         return $err->getMessage();
     }
@@ -511,7 +511,7 @@ function pterodactyl_ChangePassword(array $params) {
 
         $userId = $serverData['attributes']['user'];
         $userResult = pterodactyl_API($params, 'users/' . $userId);
-        if($userResult['status_code'] !== 200) throw new Exception('Failed to retrieve user, received error code: ' . $userResult['status_code'] . '.');
+        if($userResult['status_code'] !== 200) throw new Exception('检索用户失败，错误代码: ' . $userResult['status_code'] . '.');
 
         $updateResult = pterodactyl_API($params, 'users/' . $serverData['attributes']['user'], [
             'username' => $userResult['attributes']['username'],
@@ -521,7 +521,7 @@ function pterodactyl_ChangePassword(array $params) {
 
             'password' => $params['password'],
         ], 'PATCH');
-        if($updateResult['status_code'] !== 200) throw new Exception('Failed to change password, received error code: ' . $updateResult['status_code'] . '.');
+        if($updateResult['status_code'] !== 200) throw new Exception('更改密码失败，错误代码: ' . $updateResult['status_code'] . '.');
 
         unset($params['password']);
         Capsule::table('tblhosting')->where('id', $params['serviceid'])->update([
@@ -566,12 +566,12 @@ function pterodactyl_ChangePackage(array $params) {
         ];
 
         $updateResult = pterodactyl_API($params, 'servers/' . $serverId . '/build', $updateData, 'PATCH');
-        if($updateResult['status_code'] !== 200) throw new Exception('Failed to update build of the server, received error code: ' . $updateResult['status_code'] . '. Enable module debug log for more info.');
+        if($updateResult['status_code'] !== 200) throw new Exception('无法更新服务器版本，错误代码: ' . $updateResult['status_code'] . '. 启用 debug 日志以获取更多信息.');
 
         $nestId = pterodactyl_GetOption($params, 'nest_id');
         $eggId = pterodactyl_GetOption($params, 'egg_id');
         $eggData = pterodactyl_API($params, 'nests/' . $nestId . '/eggs/' . $eggId . '?include=variables');
-        if($eggData['status_code'] !== 200) throw new Exception('Failed to get egg data, received error code: ' . $eggData['status_code'] . '. Enable module debug log for more info.');
+        if($eggData['status_code'] !== 200) throw new Exception('获取预设数据失败，错误代码: ' . $eggData['status_code'] . '. 启用 debug 日志以获取更多信息.');
 
         $environment = [];
         foreach($eggData['attributes']['relationships']['variables']['data'] as $key => $val) {
@@ -597,7 +597,7 @@ function pterodactyl_ChangePackage(array $params) {
         ];
 
         $updateResult = pterodactyl_API($params, 'servers/' . $serverId . '/startup', $updateData, 'PATCH');
-        if($updateResult['status_code'] !== 200) throw new Exception('Failed to update startup of the server, received error code: ' . $updateResult['status_code'] . '. Enable module debug log for more info.');
+        if($updateResult['status_code'] !== 200) throw new Exception('无法更新服务器的启动参数，错误代码: ' . $updateResult['status_code'] . '. 启用 debug 日志以获取更多信息.');
     } catch(Exception $err) {
         return $err->getMessage();
     }
